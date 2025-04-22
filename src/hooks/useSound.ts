@@ -78,9 +78,9 @@ export const useSound = () => {
 			const now = Date.now();
 			const lastPlayed = lastPlayedRef.current[soundPath] || 0;
 
-			// Prevent playing the same sound more than once every 300ms
+			// Prevent playing the same sound more than once every 10ms
 			// This prevents issues with multiple rapid calls and double-clicks
-			if (now - lastPlayed < 300) {
+			if (now - lastPlayed < 10) {
 				return;
 			}
 
@@ -128,7 +128,7 @@ export const useSound = () => {
 			// This helps prevent multiple sounds when clicking after game completion
 			setTimeout(() => {
 				isLoadingRef.current[soundPath] = false;
-			}, 300);
+			}, 100);
 		} catch (error) {
 			console.error("Error playing sound:", error);
 			isLoadingRef.current[soundPath] = false;

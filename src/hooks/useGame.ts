@@ -88,18 +88,8 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 				// Update game state immediately without waiting for sound to finish
 				// This prevents additional clicks during transition and double-clicks
 				if (nextNumber === gridSize * gridSize) {
-					// Game completed - play sound first, then show alert and reset game
-					// Use a longer delay to ensure the sound starts playing before the alert and
-					// to prevent additional clicks during transition
+					// Game completed
 					setGameOver(true);
-					setTimeout(() => {
-						alert("Congratulations! You completed the sequence!");
-						// Use another setTimeout with a longer delay to ensure the alert is processed
-						// before resetting the game and to prevent rapid re-triggering of sounds
-						setTimeout(() => {
-							resetGame();
-						}, 300);
-					}, 300);
 				} else {
 					setNextNumber(nextNumber + 1);
 				}
@@ -108,15 +98,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 				setGameOver(true);
 			}
 		},
-		[
-			gameOver,
-			gameStarted,
-			nextNumber,
-			resetGame,
-			gridSize,
-			startGame,
-			playSound,
-		],
+		[gameOver, gameStarted, nextNumber, gridSize, startGame, playSound],
 	);
 
 	// Setup initial game state

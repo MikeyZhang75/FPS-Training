@@ -177,37 +177,23 @@ export default function Home() {
 				>
 					{numbers.map((num, index) => (
 						<motion.div
-							key={`number-${num}-${gridSize}`} // Include gridSize in key to trigger animations on grid size change
-							// Enable layout animations for each grid item
-							layout
-							// Remove scaling animations
-							initial={{ opacity: 0 }}
-							animate={{
-								opacity: 1,
-							}}
-							// Keep hover effect only when appropriate
-							whileHover={{
-								scale:
-									(!gameStarted && num === 1) || !gameStarted || gameOver
-										? 1.05
-										: 1,
-								transition: { duration: 0.2 },
-							}}
-							// Keep tap effect only when appropriate
-							whileTap={{
-								scale:
-									(!gameStarted && num === 1) || !gameStarted || gameOver
-										? 0.95
-										: 1,
-							}}
-							transition={{
-								duration: 0.4,
-								// Stagger the animations based on index and only for initial render
-								delay: index * 0.03,
-							}}
+							key={`number-${num}-${gridSize}`}
+							layout="position"
+							initial={{ opacity: 0, scale: 1 }}
+							animate={{ opacity: 1, scale: 1 }}
+							whileHover={
+								(!gameStarted && num === 1) || !gameStarted || gameOver
+									? { scale: 1.05 }
+									: undefined
+							}
+							whileTap={
+								(!gameStarted && num === 1) || !gameStarted || gameOver
+									? { scale: 0.95 }
+									: undefined
+							}
+							transition={{ duration: 0.4, delay: index * 0.03 }}
 						>
 							<div
-								// Use regular div instead of motion.div to remove animations
 								className={`w-full h-full ${num < nextNumber && gameStarted ? "opacity-40" : ""}`}
 							>
 								<Button
