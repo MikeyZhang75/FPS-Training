@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useColors } from "./useColors";
 import { useSound } from "./useSound";
 import { useTimer } from "./useTimer";
-
+import { useSession } from "@/lib/auth-client";
 export type GridSize = 4 | 5 | 6;
 
 export const useGame = (initialGridSize: GridSize = 4) => {
@@ -20,6 +20,9 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 	const { playSound } = useSound();
 	const timerIsRunning = gameStarted && !gameOver;
 	const { timer, resetTimer, formatTime } = useTimer(timerIsRunning);
+
+	const session = useSession();
+	const user = session.data?.user;
 
 	// Save game record to database
 	const saveGameRecord = useCallback(
@@ -133,13 +136,10 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 					const endTime = Date.now();
 					if (startTimeRef.current) {
 						const startTime = startTimeRef.current;
-						const duration = endTime - startTime;
-						console.log("Game Start Time (Unix ms):", startTime);
-						console.log("Game End Time (Unix ms):", endTime);
-						console.log("Game Duration (ms):", duration);
-
 						// Save record to database
-						saveGameRecord(gridSize, startTime, endTime);
+						if (user) {
+							saveGameRecord(gridSize, startTime, endTime);
+						}
 					}
 				} else {
 					setNextNumber(nextNumber + 1);
@@ -157,6 +157,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 			startGame,
 			playSound,
 			saveGameRecord,
+			user,
 		],
 	);
 
