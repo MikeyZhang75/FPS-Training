@@ -11,23 +11,38 @@
 
 ## 技术栈
 
-- [Next.js 15](https://nextjs.org/) 使用 App Router
+- [Next.js 15](https://nextjs.org/) 使用 App Router 和 Turbopack
 - [React 19](https://react.dev/)
 - [Bun](https://bun.sh/) 作为 JavaScript 运行时
 - [Tailwind CSS v4](https://tailwindcss.com/) 用于样式设计
 - [Biome](https://biomejs.dev/) 用于代码格式化和检查
 - [Husky](https://typicode.github.io/husky/) 用于 Git 钩子
+- [Shadcn UI](https://ui.shadcn.com) 作为 UI 库
+- [Elysia](https://elysiajs.com/) (1.2.25) 用于 API 服务
+- [Drizzle ORM](https://orm.drizzle.team/) 用于数据库操作
+- [NeonDB](https://neon.tech/) 作为 Serverless PostgreSQL 数据库
 
 ## 项目结构
 
-```
+```text
 src/
 ├── app/            # Next.js App Router 页面
-│   └── page.tsx    # 主游戏组件
+│   ├── page.tsx    # 主游戏组件
+│   ├── layout.tsx  # 应用布局组件
+│   └── api/        # API 路由
+├── components/     # React 组件
+│   └── ui/         # UI 组件
 ├── hooks/          # 自定义 React 钩子
-│   ├── useColors.ts   # 生成按钮颜色的钩子
-│   ├── useGame.ts     # 主游戏逻辑钩子
-│   └── useTimer.ts    # 计时器功能钩子
+│   ├── useColors.ts  # 生成按钮颜色的钩子
+│   ├── useGame.ts    # 主游戏逻辑钩子
+│   └── useTimer.ts   # 计时器功能钩子
+├── database/       # 数据库相关代码
+│   ├── neon.ts     # NeonDB 连接
+│   ├── schema.ts   # 数据库模式定义
+│   ├── model.ts    # 数据模型
+│   └── utils.ts    # 数据库工具函数
+├── lib/           # 工具库和辅助函数
+└── services/      # 服务层代码
 ```
 
 ## 开始使用
@@ -50,7 +65,7 @@ bun install
 ### 开发
 
 ```bash
-# 启动开发服务器
+# 启动开发服务器 (使用 Turbopack)
 bun run dev
 ```
 

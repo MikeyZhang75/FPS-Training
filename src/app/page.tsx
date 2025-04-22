@@ -9,6 +9,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { type GridSize, useGame } from "@/hooks/useGame";
+import { toast } from "sonner";
 
 export default function Home() {
 	const {
@@ -55,7 +56,7 @@ export default function Home() {
 			)}
 
 			<div className="absolute top-4 right-4">
-				<Button onClick={() => console.log("Login clicked")}>Login</Button>
+				<Button onClick={() => toast.success("登录成功")}>登录</Button>
 			</div>
 
 			<div className="relative">
