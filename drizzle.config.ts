@@ -6,6 +6,6 @@ export default defineConfig({
 	schema: ["./src/database/auth-schema.ts", "./src/database/game-schema.ts"],
 	dialect: "postgresql",
 	dbCredentials: {
-		url: env.DIRECT_URL,
+		url: env.DB_URL,
 	},
 });
