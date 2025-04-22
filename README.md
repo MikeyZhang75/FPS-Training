@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FPS 训练游戏
 
-## Getting Started
+这是一个数字序列记忆游戏，玩家需要按顺序点击数字。测试并提高您的反应时间和记忆力。
 
-First, run the development server:
+## 功能特点
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 不同的网格大小（4×4、5×5、6×6）
+- 计时器跟踪您的完成时间
+- 色彩丰富的视觉设计，便于数字识别
+- 简单直观的界面
+
+## 技术栈
+
+- [Next.js 15](https://nextjs.org/) 使用 App Router
+- [React 19](https://react.dev/)
+- [Bun](https://bun.sh/) 作为 JavaScript 运行时
+- [Tailwind CSS v4](https://tailwindcss.com/) 用于样式设计
+- [Biome](https://biomejs.dev/) 用于代码格式化和检查
+- [Husky](https://typicode.github.io/husky/) 用于 Git 钩子
+
+## 项目结构
+
+```
+src/
+├── app/            # Next.js App Router 页面
+│   └── page.tsx    # 主游戏组件
+├── hooks/          # 自定义 React 钩子
+│   ├── useColors.ts   # 生成按钮颜色的钩子
+│   ├── useGame.ts     # 主游戏逻辑钩子
+│   └── useTimer.ts    # 计时器功能钩子
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 开始使用
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 前提条件
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [Bun](https://bun.sh/) (>= 1.0.0)
 
-## Learn More
+### 安装
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# 克隆仓库
+git clone https://github.com/your-username/fps-training.git
+cd fps-training
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 安装依赖
+bun install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 开发
 
-## Deploy on Vercel
+```bash
+# 启动开发服务器
+bun run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+在浏览器中打开 [http://localhost:3000](http://localhost:3000) 查看应用程序。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 代码质量
+
+项目使用 Biome 进行代码质量和格式化：
+
+```bash
+# 检查代码问题
+bun run check
+
+# 自动修复代码问题
+bun run check:fix
+```
+
+### 提交前钩子
+
+项目使用 Husky 在每次提交前运行检查：
+
+- 提交前：运行 `check:fix` 确保代码质量
+- 如果发现任何问题且无法自动修复，提交将被中止
+
+## 如何游玩
+
+1. 使用左上角的下拉菜单选择您喜欢的网格大小
+2. 点击数字"1"开始游戏
+3. 继续按顺序点击数字（1、2、3 等）
+4. 尝试尽快完成序列
+5. 如果点击错误的数字，游戏结束
+6. 完成后，将显示您的用时
+
+## 许可证
+
+[MIT](LICENSE)
