@@ -135,9 +135,9 @@ export default function Home() {
 			<AuthDialog isOpen={isLoginDialogOpen} onClose={closeLoginDialog} />
 
 			<div className="relative">
-				<div className="absolute -top-10 left-0 right-0 text-center">
+				<div className="text-center">
 					<motion.div
-						className="inline-block px-4 py-2 rounded-md shadow-md text-white"
+						className="inline-block px-4 py-2 bg-black dark:bg-background text-white dark:text-foreground rounded-md"
 						// Remove pulsing animation
 						animate={{
 							scale: 1,

@@ -42,7 +42,7 @@ export function LoginForm({
 								<IconMail className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
 								<FormControl>
 									<Input
-										placeholder="your.email@qq.com"
+										placeholder="your.email@outlook.com"
 										className="pl-10"
 										{...field}
 									/>

@@ -41,7 +41,7 @@ export function RegisterForm({
 							<div className="relative">
 								<IconUser className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
 								<FormControl>
-									<Input placeholder="您的姓名" className="pl-10" {...field} />
+									<Input placeholder="Mikey" className="pl-10" {...field} />
 								</FormControl>
 							</div>
 							<FormMessage />
@@ -58,7 +58,7 @@ export function RegisterForm({
 								<IconMail className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
 								<FormControl>
 									<Input
-										placeholder="your.email@qq.com"
+										placeholder="your.email@outlook.com"
 										className="pl-10"
 										{...field}
 									/>
