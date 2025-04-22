@@ -1,103 +1,217 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+
+type GridSize = 4 | 5 | 6;
 
 export default function Home() {
-	return (
-		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-			<main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-				<Image
-					className="dark:invert"
-					src="/next.svg"
-					alt="Next.js logo"
-					width={180}
-					height={38}
-					priority
-				/>
-				<ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-					<li className="mb-2 tracking-[-.01em]">
-						Get started by editing{" "}
-						<code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-							src/app/page.tsx
-						</code>
-						.
-					</li>
-					<li className="tracking-[-.01em]">
-						Save and see your changes instantly.
-					</li>
-				</ol>
+	const [gridSize, setGridSize] = useState<GridSize>(4);
+	const [numbers, setNumbers] = useState<number[]>([]);
+	const [nextNumber, setNextNumber] = useState(1);
+	const [gameOver, setGameOver] = useState(false);
+	const [gameStarted, setGameStarted] = useState(false);
+	const [timer, setTimer] = useState(0);
 
-				<div className="flex gap-4 items-center flex-col sm:flex-row">
-					<a
-						className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-						href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
+	// Function to shuffle the numbers array
+	const shuffleNumbers = useCallback(() => {
+		const totalNumbers = gridSize * gridSize;
+		const nums = Array.from({ length: totalNumbers }, (_, i) => i + 1);
+		for (let i = nums.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[nums[i], nums[j]] = [nums[j], nums[i]];
+		}
+		return nums;
+	}, [gridSize]);
+
+	// Reset the game
+	const resetGame = useCallback(() => {
+		setNumbers(shuffleNumbers());
+		setNextNumber(1);
+		setGameOver(false);
+		setGameStarted(false);
+		setTimer(0);
+	}, [shuffleNumbers]);
+
+	// Start the game
+	const startGame = useCallback(() => {
+		if (!gameStarted && !gameOver) {
+			setGameStarted(true);
+		}
+	}, [gameStarted, gameOver]);
+
+	// Change grid size
+	const handleGridSizeChange = (size: GridSize) => {
+		if (gameStarted) {
+			const confirmChange = window.confirm(
+				"Changing grid size will reset the current game. Continue?",
+			);
+			if (!confirmChange) return;
+		}
+		setGridSize(size);
+		resetGame();
+	};
+
+	// Shuffle the numbers when the component mounts or grid size changes
+	useEffect(() => {
+		resetGame();
+	}, [resetGame]);
+
+	// Add keyboard event listener for Enter key
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key === "Enter" && !gameStarted && !gameOver) {
+				startGame();
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown);
+		};
+	}, [gameStarted, gameOver, startGame]);
+
+	// Timer effect
+	useEffect(() => {
+		let interval: NodeJS.Timeout | null = null;
+
+		if (gameStarted && !gameOver) {
+			interval = setInterval(() => {
+				setTimer((prevTimer) => prevTimer + 1);
+			}, 1000);
+		}
+
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	}, [gameStarted, gameOver]);
+
+	// Format time as MM:SS
+	const formatTime = (seconds: number): string => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	};
+
+	// Handle box click
+	const handleBoxClick = (num: number) => {
+		if (gameOver || !gameStarted) return;
+
+		if (num === nextNumber) {
+			// Correct number clicked
+			if (nextNumber === gridSize * gridSize) {
+				// Game completed
+				alert("Congratulations! You completed the sequence!");
+				resetGame();
+			} else {
+				setNextNumber(nextNumber + 1);
+			}
+		} else {
+			// Incorrect number clicked - game over
+			setGameOver(true);
+		}
+	};
+
+	// Handle click on grid element (prevent event bubbling)
+	const handleGridClick = (e: React.MouseEvent) => {
+		e.stopPropagation();
+	};
+
+	return (
+		<div
+			className="flex flex-col items-center justify-center min-h-screen gap-8 p-4 bg-black select-none"
+			onClick={startGame}
+			onKeyDown={(e) => e.key === "Enter" && startGame()}
+		>
+			{(!gameStarted || gameOver) && (
+				<div
+					className="absolute top-4 left-4"
+					onClick={(e) => e.stopPropagation()}
+					onKeyDown={(e) => e.stopPropagation()}
+				>
+					<select
+						className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+						value={gridSize}
+						onChange={(e) =>
+							handleGridSizeChange(Number(e.target.value) as GridSize)
+						}
 					>
-						<Image
-							className="dark:invert"
-							src="/vercel.svg"
-							alt="Vercel logomark"
-							width={20}
-							height={20}
-						/>
-						Deploy now
-					</a>
-					<a
-						className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Read our docs
-					</a>
+						<option value={4}>4×4</option>
+						<option value={5}>5×5</option>
+						<option value={6}>6×6</option>
+					</select>
 				</div>
-			</main>
-			<footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
+			)}
+
+			<div
+				className="relative"
+				onClick={handleGridClick}
+				onKeyDown={(e) => e.stopPropagation()}
+			>
+				{gameStarted && (
+					<div className="absolute -top-10 left-0 right-0 text-center">
+						<div className="inline-block px-4 py-2 rounded-md shadow-md text-white">
+							<span className="text-xl font-mono font-bold">
+								{formatTime(timer)}
+							</span>
+						</div>
+					</div>
+				)}
+
+				<div
+					className="grid gap-2 p-4 rounded-lg shadow-lg"
+					style={{
+						gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
+						gridTemplateRows: `repeat(${gridSize}, minmax(0, 1fr))`,
+						position: "relative",
+					}}
 				>
-					<Image
-						aria-hidden
-						src="/file.svg"
-						alt="File icon"
-						width={16}
-						height={16}
-					/>
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="/window.svg"
-						alt="Window icon"
-						width={16}
-						height={16}
-					/>
-					Examples
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="/globe.svg"
-						alt="Globe icon"
-						width={16}
-						height={16}
-					/>
-					Go to nextjs.org →
-				</a>
-			</footer>
+					{!gameStarted && (
+						<div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10 rounded-lg" />
+					)}
+					{numbers.map((num) => (
+						<button
+							key={`number-${num}`}
+							type="button"
+							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-md
+								${gameOver || !gameStarted ? "cursor-not-allowed" : "cursor-pointer"}
+								${num < nextNumber && gameStarted ? "bg-black dark:bg-black text-white" : "bg-white dark:bg-white hover:bg-gray-100 dark:hover:bg-gray-200 text-black"}`}
+							onClick={() => handleBoxClick(num)}
+							disabled={gameOver || !gameStarted}
+						>
+							{num}
+						</button>
+					))}
+				</div>
+
+				{!gameStarted && !gameOver && (
+					<div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg border-0 p-0 z-20 pointer-events-none">
+						<div className="backdrop-blur-sm p-4 rounded-lg text-center shadow-lg">
+							<p className="text-neutral-300">
+								点击任何位置或按 <span className="font-bold">Enter</span>{" "}
+								开始游戏
+							</p>
+						</div>
+					</div>
+				)}
+
+				{gameOver && (
+					<div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+						<div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center">
+							<p className="text-xl font-bold mb-4">游戏结束！</p>
+							<button
+								type="button"
+								className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+								onClick={(e) => {
+									e.stopPropagation();
+									resetGame();
+								}}
+							>
+								再玩一次
+							</button>
+						</div>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }
