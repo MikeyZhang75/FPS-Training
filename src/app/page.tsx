@@ -1,8 +1,6 @@
 "use client";
 
-import { AuthDialog } from "@/components/AuthDialog";
-import { LanguageDialog } from "@/components/LanguageDialog";
-import { UserProfileButton } from "@/components/UserProfileButton";
+import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { FadeTransition } from "@/components/ui/fade-transition";
 import {
@@ -12,10 +10,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { useLoginContext } from "@/contexts/LoginContext";
 import { type GridSize, useGame } from "@/hooks/useGame";
-import { useLanguage } from "@/hooks/useLanguage";
-import { IconLanguage } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 
 // Helper function to resume AudioContext on user interaction
@@ -73,12 +68,6 @@ export default function Home() {
 		formatTime,
 	} = useGame();
 
-	const { language, isDialogOpen, openDialog, closeDialog, changeLanguage } =
-		useLanguage();
-
-	const { isDialogOpen: isLoginDialogOpen, closeDialog: closeLoginDialog } =
-		useLoginContext();
-
 	return (
 		<div
 			className="flex flex-col items-center justify-center min-h-screen gap-8 p-4 select-none"
@@ -112,27 +101,7 @@ export default function Home() {
 				</div>
 			</FadeTransition>
 
-			{/* With Framer Motion, we can simplify the structure */}
-			<FadeTransition
-				show={!gameStarted || gameOver}
-				className="absolute top-4 right-4 h-9"
-			>
-				<div className="flex gap-2">
-					<Button size="icon" variant="outline" onClick={openDialog}>
-						<IconLanguage />
-					</Button>
-					<UserProfileButton />
-				</div>
-			</FadeTransition>
-
-			<LanguageDialog
-				isOpen={isDialogOpen}
-				onClose={closeDialog}
-				selectedLanguage={language}
-				onSelectLanguage={changeLanguage}
-			/>
-
-			<AuthDialog isOpen={isLoginDialogOpen} onClose={closeLoginDialog} />
+			<Header showControls={!gameStarted || gameOver} />
 
 			<div className="relative">
 				<div className="text-center">

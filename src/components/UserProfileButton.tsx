@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLoginContext } from "@/contexts/LoginContext";
 import { signOut, useSession } from "@/lib/auth-client";
-import { IconLogout, IconUser } from "@tabler/icons-react";
+import { IconChartBar, IconLogout, IconUser } from "@tabler/icons-react";
+import Link from "next/link";
 
 export function UserProfileButton() {
 	const { openDialog } = useLoginContext();
@@ -41,6 +42,12 @@ export function UserProfileButton() {
 			<DropdownMenuContent align="end">
 				<DropdownMenuLabel>我的账户</DropdownMenuLabel>
 				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
+					<Link href="/stats">
+						<IconChartBar />
+						统计数据
+					</Link>
+				</DropdownMenuItem>
 				<DropdownMenuItem onClick={handleLogout}>
 					<IconLogout />
 					退出登录

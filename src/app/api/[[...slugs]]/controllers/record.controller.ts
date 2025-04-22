@@ -1,7 +1,6 @@
 import { record } from "@/database/game-schema";
 import { model } from "@/database/model";
 import db from "@/database/neon";
-import { eq } from "drizzle-orm";
 import { Elysia, error, t } from "elysia";
 import { userMiddleware } from "../middlewares/user-middleware";
 
@@ -9,23 +8,6 @@ const { record: insertRecord } = model.insert;
 
 export const recordController = new Elysia({ prefix: "/record" })
 	.derive(userMiddleware)
-	.get("/", async ({ user }) => {
-		if (!user) {
-			return error(401, {
-				success: false,
-				message: "Unauthorized",
-			});
-		}
-		const records = await db
-			.select()
-			.from(record)
-			.where(eq(record.userId, user.id));
-
-		return {
-			success: true,
-			data: records,
-		};
-	})
 	.post(
 		"/",
 		async ({ body, user }) => {

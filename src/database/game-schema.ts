@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { check, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { user } from "./auth-schema";
 
 export const record = pgTable(
 	"record",
@@ -8,7 +9,9 @@ export const record = pgTable(
 		id: text("id")
 			.$defaultFn(() => randomUUID())
 			.primaryKey(),
-		userId: text("user_id").notNull(),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
 		gridSize: integer("grid_size").notNull(),
 		startTime: text("start_time").notNull(),
 		endTime: text("end_time").notNull(),

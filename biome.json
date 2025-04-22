@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["node_modules", ".next", "src/database/utils.ts"]
+		"ignore": ["node_modules", ".next", "src/database/utils.ts", "drizzle"]
 	},
 	"formatter": {
 		"enabled": true,
