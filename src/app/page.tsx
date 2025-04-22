@@ -164,10 +164,10 @@ export default function Home() {
 					}
 					// Enable layout animations
 					layout
-					// Add initial animation for the grid container
+					// Add initial animation for the grid container to prevent layout shift
 					initial={{ opacity: 0, scale: 0.9 }}
 					animate={{ opacity: 1, scale: 1 }}
-					// Add a transition for smooth animation
+					// Add a transition for smooth animation and to prevent layout shift
 					transition={{
 						duration: 0.5,
 						type: "spring",
