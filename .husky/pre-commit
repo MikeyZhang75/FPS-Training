@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running code checks before commit..."
+bun run check:fix
+
+# Store the exit code of the check:fix command
+EXIT_CODE=$?
+
+# If check:fix failed, abort the commit
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "❌ Code checks failed. Please fix the issues before committing."
+  exit 1
+fi
+
+echo "✅ Code checks passed. Proceeding with commit."
