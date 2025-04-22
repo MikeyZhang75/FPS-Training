@@ -1,0 +1,18 @@
+[build]
+builder = "bun"
+
+[phases.setup]
+nixPkgs = ["bun"]
+
+[phases.install]
+cmds = ["bun install"]
+
+[phases.build]
+cmds = ["bun run build"]
+
+[start]
+cmd = "bun run start"
+
+[variables]
+BUN_VERSION = "1.2.7"
+NODE_ENV = "production" 
