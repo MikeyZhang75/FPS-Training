@@ -16,6 +16,7 @@ import { useLoginContext } from "@/contexts/LoginContext";
 import { type GridSize, useGame } from "@/hooks/useGame";
 import { useLanguage } from "@/hooks/useLanguage";
 import { IconLanguage } from "@tabler/icons-react";
+import { motion } from "framer-motion";
 
 // Helper function to resume AudioContext on user interaction
 const resumeAudioContext = () => {
@@ -135,35 +136,93 @@ export default function Home() {
 
 			<div className="relative">
 				<div className="absolute -top-10 left-0 right-0 text-center">
-					<div className="inline-block px-4 py-2 rounded-md shadow-md text-white">
+					<motion.div
+						className="inline-block px-4 py-2 rounded-md shadow-md text-white"
+						// Remove pulsing animation
+						animate={{
+							scale: 1,
+							boxShadow:
+								"0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+						}}
+						transition={{
+							duration: 0.3,
+						}}
+					>
 						<span className="text-xl font-mono font-bold">
 							{formatTime(timer)}
 						</span>
-					</div>
+					</motion.div>
 				</div>
 
-				<div
+				<motion.div
+					key={`grid-${gridSize}`}
 					className="grid gap-2 p-4 rounded-lg shadow-lg relative grid-cols-[repeat(var(--grid-size),minmax(0,1fr))] grid-rows-[repeat(var(--grid-size),minmax(0,1fr))]"
 					style={
 						{
 							"--grid-size": gridSize,
 						} as React.CSSProperties
 					}
+					// Enable layout animations
+					layout
+					// Add initial animation for the grid container
+					initial={{ opacity: 0, scale: 0.9 }}
+					animate={{ opacity: 1, scale: 1 }}
+					// Add a transition for smooth animation
+					transition={{
+						duration: 0.5,
+						type: "spring",
+						stiffness: 300,
+						damping: 30,
+					}}
 				>
 					{numbers.map((num, index) => (
-						<Button
-							key={`number-${num}`}
-							type="button"
-							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold cursor-pointer text-black
-								${num < nextNumber && gameStarted ? "opacity-40" : "hover:brightness-95"}`}
-							style={{ backgroundColor: buttonColors[index] }}
-							onClick={() => handleBoxClick(num)}
-							disabled={(!gameStarted && num !== 1) || gameOver}
+						<motion.div
+							key={`number-${num}-${gridSize}`} // Include gridSize in key to trigger animations on grid size change
+							// Enable layout animations for each grid item
+							layout
+							// Remove scaling animations
+							initial={{ opacity: 0 }}
+							animate={{
+								opacity: 1,
+							}}
+							// Keep hover effect only when appropriate
+							whileHover={{
+								scale:
+									(!gameStarted && num === 1) || !gameStarted || gameOver
+										? 1.05
+										: 1,
+								transition: { duration: 0.2 },
+							}}
+							// Keep tap effect only when appropriate
+							whileTap={{
+								scale:
+									(!gameStarted && num === 1) || !gameStarted || gameOver
+										? 0.95
+										: 1,
+							}}
+							transition={{
+								duration: 0.4,
+								// Stagger the animations based on index and only for initial render
+								delay: index * 0.03,
+							}}
 						>
-							{!gameStarted && num !== 1 ? "?" : num}
-						</Button>
+							<div
+								// Use regular div instead of motion.div to remove animations
+								className={`w-full h-full ${num < nextNumber && gameStarted ? "opacity-40" : ""}`}
+							>
+								<Button
+									type="button"
+									className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold cursor-pointer text-black hover:brightness-95"
+									style={{ backgroundColor: buttonColors[index] }}
+									onClick={() => handleBoxClick(num)}
+									disabled={(!gameStarted && num !== 1) || gameOver}
+								>
+									{!gameStarted && num !== 1 ? "?" : num}
+								</Button>
+							</div>
+						</motion.div>
 					))}
-				</div>
+				</motion.div>
 
 				{/* For the game over overlay, we use AnimatePresence for proper mounting/unmounting */}
 				<FadeTransition
