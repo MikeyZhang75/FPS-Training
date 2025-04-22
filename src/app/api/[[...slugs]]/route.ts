@@ -1,11 +1,12 @@
+import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
-// app/api/[[...slugs]]/route.ts
 import { Elysia } from "elysia";
 import { recordController } from "./controllers/record.controller";
 import { statsController } from "./controllers/stats.controller";
 import betterAuthView from "./libs/auth/auth-view";
 
 const app = new Elysia({ prefix: "/api" })
+	.use(cors())
 	.all("/auth/*", betterAuthView)
 	.use(
 		swagger({
