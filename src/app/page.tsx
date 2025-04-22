@@ -86,7 +86,7 @@ export default function Home() {
 							onClick={() => handleBoxClick(num)}
 							disabled={(!gameStarted && num !== 1) || gameOver}
 						>
-							{num}
+							{!gameStarted && num !== 1 ? "?" : num}
 						</Button>
 					))}
 				</div>
