@@ -26,13 +26,26 @@ export default function Home() {
 
 	// Reset the game
 	const resetGame = useCallback(() => {
-		// Function to generate a random light color suitable for black text
-		const generateRandomLightColor = () => {
-			// Using HSL to ensure we get light colors (high lightness value)
-			const h = Math.floor(Math.random() * 360); // Random hue
-			const s = Math.floor(Math.random() * 30) + 20; // Medium-low saturation (20-50%)
-			const l = Math.floor(Math.random() * 15) + 75; // High lightness (75-90%)
-			return `hsl(${h}, ${s}%, ${l}%)`;
+		// Generate diverse colors by distributing hues evenly around the color wheel
+		const generateDiverseColors = (count: number) => {
+			const colors = [];
+			// Divide the color wheel (360 degrees) into equal segments
+			const hueStep = 360 / count;
+
+			for (let i = 0; i < count; i++) {
+				// Base hue for this segment
+				const baseHue = Math.floor(i * hueStep);
+				// Add a small random offset within the segment for variety
+				const hue = baseHue + Math.floor(Math.random() * (hueStep * 0.8));
+				// Medium-low saturation (20-50%)
+				const s = Math.floor(Math.random() * 30) + 20;
+				// High lightness (75-90%) for readability with black text
+				const l = Math.floor(Math.random() * 15) + 75;
+				colors.push(`hsl(${hue}, ${s}%, ${l}%)`);
+			}
+
+			// Shuffle the colors to avoid predictable patterns
+			return colors.sort(() => Math.random() - 0.5);
 		};
 
 		setNumbers(shuffleNumbers());
@@ -41,12 +54,9 @@ export default function Home() {
 		setGameStarted(false);
 		setTimer(0);
 
-		// Generate random colors for each button
+		// Generate diverse colors for each button
 		const totalNumbers = gridSize * gridSize;
-		const colors = Array.from({ length: totalNumbers }, () =>
-			generateRandomLightColor(),
-		);
-		setButtonColors(colors);
+		setButtonColors(generateDiverseColors(totalNumbers));
 	}, [shuffleNumbers, gridSize]);
 
 	// Start the game
@@ -168,13 +178,9 @@ export default function Home() {
 						<button
 							key={`number-${num}`}
 							type="button"
-							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-md cursor-pointer
-								${num < nextNumber && gameStarted ? "bg-black dark:bg-black text-white" : "text-black hover:brightness-95"}`}
-							style={
-								num >= nextNumber || !gameStarted
-									? { backgroundColor: buttonColors[index] }
-									: undefined
-							}
+							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-md cursor-pointer text-black
+								${num < nextNumber && gameStarted ? "opacity-40" : "hover:brightness-95"}`}
+							style={{ backgroundColor: buttonColors[index] }}
 							onClick={() => handleBoxClick(num)}
 							disabled={(!gameStarted && num !== 1) || gameOver}
 						>
