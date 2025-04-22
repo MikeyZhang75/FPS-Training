@@ -2,7 +2,7 @@ import { record } from "@/database/game-schema";
 import { model } from "@/database/model";
 import db from "@/database/neon";
 import { eq } from "drizzle-orm";
-import { Elysia, t } from "elysia";
+import { Elysia, error, t } from "elysia";
 import { userMiddleware } from "../middlewares/user-middleware";
 
 const { record: insertRecord } = model.insert;
@@ -11,10 +11,10 @@ export const recordController = new Elysia({ prefix: "/record" })
 	.derive(userMiddleware)
 	.get("/", async ({ user }) => {
 		if (!user) {
-			return {
+			return error(401, {
 				success: false,
-				error: "Unauthorized",
-			};
+				message: "Unauthorized",
+			});
 		}
 		const records = await db
 			.select()
@@ -34,10 +34,10 @@ export const recordController = new Elysia({ prefix: "/record" })
 
 				// Check if user is authenticated
 				if (!user) {
-					return {
+					return error(401, {
 						success: false,
-						error: "Unauthorized",
-					};
+						message: "Unauthorized",
+					});
 				}
 
 				// Insert record into database
@@ -48,7 +48,7 @@ export const recordController = new Elysia({ prefix: "/record" })
 						gridSize,
 						startTime,
 						endTime,
-						duration: endTime - startTime,
+						duration: Number(endTime) - Number(startTime),
 					})
 					.returning();
 
@@ -56,12 +56,12 @@ export const recordController = new Elysia({ prefix: "/record" })
 					success: true,
 					data: newRecord[0],
 				};
-			} catch (error) {
-				console.error("Error inserting record:", error);
-				return {
+			} catch (e) {
+				console.error("Error inserting record:", e);
+				return error(500, {
 					success: false,
-					error: "Failed to insert record",
-				};
+					message: "Failed to insert record",
+				});
 			}
 		},
 		{

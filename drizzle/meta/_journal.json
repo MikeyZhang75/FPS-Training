@@ -1,20 +1,27 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1745335200616,
-			"tag": "0000_natural_mojo",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1745335504493,
-			"tag": "0001_lively_richard_fisk",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1745335200616,
+      "tag": "0000_natural_mojo",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1745335504493,
+      "tag": "0001_lively_richard_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1745336406317,
+      "tag": "0002_mighty_spacker_dave",
+      "breakpoints": true
+    }
+  ]
 }

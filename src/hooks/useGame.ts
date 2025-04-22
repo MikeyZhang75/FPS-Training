@@ -1,4 +1,6 @@
+import { recordService } from "@/services/record.service";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useColors } from "./useColors";
 import { useSound } from "./useSound";
 import { useTimer } from "./useTimer";
@@ -18,6 +20,39 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 	const { playSound } = useSound();
 	const timerIsRunning = gameStarted && !gameOver;
 	const { timer, resetTimer, formatTime } = useTimer(timerIsRunning);
+
+	// Save game record to database
+	const saveGameRecord = useCallback(
+		async (gridSize: GridSize, startTime: number, endTime: number) => {
+			// Show loading toast
+			const toastId = toast.loading("保存游戏记录...");
+
+			try {
+				// Call record service to save the record
+				const { error } = await recordService.create({
+					gridSize,
+					startTime: String(startTime),
+					endTime: String(endTime),
+				});
+
+				if (error) {
+					throw error.value.message;
+				}
+
+				// Update toast to success
+				toast.success("游戏记录已保存", {
+					id: toastId,
+				});
+			} catch (error) {
+				// Handle any errors
+				toast.error("保存游戏记录时出错", {
+					id: toastId,
+				});
+				console.error("Error saving record:", error);
+			}
+		},
+		[],
+	);
 
 	// Function to shuffle the numbers array
 	const shuffleNumbers = useCallback(() => {
@@ -102,6 +137,9 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 						console.log("Game Start Time (Unix ms):", startTime);
 						console.log("Game End Time (Unix ms):", endTime);
 						console.log("Game Duration (ms):", duration);
+
+						// Save record to database
+						saveGameRecord(gridSize, startTime, endTime);
 					}
 				} else {
 					setNextNumber(nextNumber + 1);
@@ -111,7 +149,15 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 				setGameOver(true);
 			}
 		},
-		[gameOver, gameStarted, nextNumber, gridSize, startGame, playSound],
+		[
+			gameOver,
+			gameStarted,
+			nextNumber,
+			gridSize,
+			startGame,
+			playSound,
+			saveGameRecord,
+		],
 	);
 
 	// Setup initial game state
