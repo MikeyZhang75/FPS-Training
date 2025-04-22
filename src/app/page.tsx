@@ -1,5 +1,8 @@
 "use client";
 
+import { AuthDialog } from "@/components/AuthDialog";
+import { LanguageDialog } from "@/components/LanguageDialog";
+import { UserProfileButton } from "@/components/UserProfileButton";
 import { Button } from "@/components/ui/button";
 import {
 	Select,
@@ -8,8 +11,10 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useLoginContext } from "@/contexts/LoginContext";
 import { type GridSize, useGame } from "@/hooks/useGame";
-import { toast } from "sonner";
+import { useLanguage } from "@/hooks/useLanguage";
+import { IconLanguage } from "@tabler/icons-react";
 
 export default function Home() {
 	const {
@@ -25,6 +30,12 @@ export default function Home() {
 		resetGame,
 		formatTime,
 	} = useGame();
+
+	const { language, isDialogOpen, openDialog, closeDialog, changeLanguage } =
+		useLanguage();
+
+	const { isDialogOpen: isLoginDialogOpen, closeDialog: closeLoginDialog } =
+		useLoginContext();
 
 	return (
 		<div
@@ -55,9 +66,21 @@ export default function Home() {
 				</div>
 			)}
 
-			<div className="absolute top-4 right-4">
-				<Button onClick={() => toast.success("登录成功")}>登录</Button>
+			<div className="absolute top-4 right-4 flex gap-2">
+				<Button size="icon" variant="outline" onClick={openDialog}>
+					<IconLanguage />
+				</Button>
+				<UserProfileButton />
 			</div>
+
+			<LanguageDialog
+				isOpen={isDialogOpen}
+				onClose={closeDialog}
+				selectedLanguage={language}
+				onSelectLanguage={changeLanguage}
+			/>
+
+			<AuthDialog isOpen={isLoginDialogOpen} onClose={closeLoginDialog} />
 
 			<div className="relative">
 				<div className="absolute -top-10 left-0 right-0 text-center">
