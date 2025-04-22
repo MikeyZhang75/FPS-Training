@@ -49,3 +49,12 @@ export const verification = pgTable("verification", {
 	createdAt: timestamp("created_at"),
 	updatedAt: timestamp("updated_at"),
 });
+
+export const AuthTable = {
+	user,
+	session,
+	account,
+	verification,
+} as const;
+
+export type AuthTable = typeof AuthTable;

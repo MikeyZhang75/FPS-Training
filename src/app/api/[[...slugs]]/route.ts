@@ -1,15 +1,17 @@
+import { swagger } from "@elysiajs/swagger";
 // app/api/[[...slugs]]/route.ts
-import { Elysia, t } from "elysia";
+import { Elysia } from "elysia";
+import { recordController } from "./controllers/record.controller";
 import betterAuthView from "./libs/auth/auth-view";
 
 const app = new Elysia({ prefix: "/api" })
 	.all("/auth/*", betterAuthView)
-	.get("/", () => "hello Next")
-	.post("/", ({ body }) => body, {
-		body: t.Object({
-			name: t.String(),
+	.use(
+		swagger({
+			exclude: ["/api/swagger", "/api/swagger/json"],
 		}),
-	});
+	)
+	.use(recordController);
 
 export const GET = app.handle;
 export const POST = app.handle;

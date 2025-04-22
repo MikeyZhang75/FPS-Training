@@ -1,6 +1,6 @@
 {
-	"id": "c11a894c-cc78-478c-8e1b-633ceacdd0c4",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "e2351826-4dc3-4da3-9cdc-8fcd0c90e646",
+	"prevId": "c11a894c-cc78-478c-8e1b-633ceacdd0c4",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -345,7 +345,12 @@
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"grid_size_check": {
+					"name": "grid_size_check",
+					"value": "\"record\".\"grid_size\" IN (4, 5, 6)"
+				}
+			},
 			"isRLSEnabled": false
 		}
 	},

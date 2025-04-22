@@ -1,16 +1,16 @@
-import { table } from "./schema";
+import { GameTable } from "./game-schema";
 import { spreads } from "./utils";
 
-export const db = {
+export const model = {
 	insert: spreads(
 		{
-			user: table.user,
+			record: GameTable.record,
 		},
 		"insert",
 	),
 	select: spreads(
 		{
-			user: table.user,
+			record: GameTable.record,
 		},
 		"select",
 	),

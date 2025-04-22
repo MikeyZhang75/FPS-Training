@@ -138,7 +138,6 @@ export default function Home() {
 				<div className="text-center">
 					<motion.div
 						className="inline-block px-4 py-2 bg-black dark:bg-background text-white dark:text-foreground rounded-md"
-						// Remove pulsing animation
 						animate={{
 							scale: 1,
 							boxShadow:

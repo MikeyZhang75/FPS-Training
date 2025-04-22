@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useColors } from "./useColors";
 import { useSound } from "./useSound";
 import { useTimer } from "./useTimer";
@@ -12,6 +12,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 	const [gameOver, setGameOver] = useState(false);
 	const [gameStarted, setGameStarted] = useState(false);
 	const [buttonColors, setButtonColors] = useState<string[]>([]);
+	const startTimeRef = useRef<number | null>(null);
 
 	const { generateDiverseColors } = useColors();
 	const { playSound } = useSound();
@@ -37,6 +38,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 		setGameOver(false);
 		setGameStarted(false);
 		resetTimer();
+		startTimeRef.current = null;
 
 		// Generate diverse colors for each button
 		const totalNumbers = gridSize * gridSize;
@@ -47,6 +49,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 	const startGame = useCallback(() => {
 		if (!gameStarted && !gameOver) {
 			setGameStarted(true);
+			startTimeRef.current = Date.now(); // Unix timestamp in milliseconds
 		}
 	}, [gameStarted, gameOver]);
 
@@ -88,8 +91,18 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 				// Update game state immediately without waiting for sound to finish
 				// This prevents additional clicks during transition and double-clicks
 				if (nextNumber === gridSize * gridSize) {
-					// Game completed
+					// Game completed successfully
 					setGameOver(true);
+
+					// Log game timing information
+					const endTime = Date.now();
+					if (startTimeRef.current) {
+						const startTime = startTimeRef.current;
+						const duration = endTime - startTime;
+						console.log("Game Start Time (Unix ms):", startTime);
+						console.log("Game End Time (Unix ms):", endTime);
+						console.log("Game Duration (ms):", duration);
+					}
 				} else {
 					setNextNumber(nextNumber + 1);
 				}

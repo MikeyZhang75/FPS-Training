@@ -1,0 +1,1 @@
+ALTER TABLE "record" ADD CONSTRAINT "grid_size_check" CHECK ("record"."grid_size" IN (4, 5, 6));
