@@ -1,6 +1,14 @@
 "use client";
 
-import { useGame } from "@/hooks/useGame";
+import { Button } from "@/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { type GridSize, useGame } from "@/hooks/useGame";
 
 export default function Home() {
 	const {
@@ -19,7 +27,7 @@ export default function Home() {
 
 	return (
 		<div
-			className="flex flex-col items-center justify-center min-h-screen gap-8 p-4 bg-black select-none"
+			className="flex flex-col items-center justify-center min-h-screen gap-8 p-4 select-none"
 			onKeyDown={() => {}}
 		>
 			{(!gameStarted || gameOver) && (
@@ -28,19 +36,27 @@ export default function Home() {
 					onClick={(e) => e.stopPropagation()}
 					onKeyDown={(e) => e.stopPropagation()}
 				>
-					<select
-						className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						value={gridSize}
-						onChange={(e) =>
-							handleGridSizeChange(Number(e.target.value) as 4 | 5 | 6)
+					<Select
+						onValueChange={(value) =>
+							handleGridSizeChange(Number(value) as GridSize)
 						}
+						value={gridSize.toString()}
 					>
-						<option value={4}>4×4</option>
-						<option value={5}>5×5</option>
-						<option value={6}>6×6</option>
-					</select>
+						<SelectTrigger className="w-[180px]">
+							<SelectValue placeholder="Grid Size" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="4">4×4</SelectItem>
+							<SelectItem value="5">5×5</SelectItem>
+							<SelectItem value="6">6×6</SelectItem>
+						</SelectContent>
+					</Select>
 				</div>
 			)}
+
+			<div className="absolute top-4 right-4">
+				<Button onClick={() => console.log("Login clicked")}>Login</Button>
+			</div>
 
 			<div className="relative">
 				<div className="absolute -top-10 left-0 right-0 text-center">
@@ -60,17 +76,17 @@ export default function Home() {
 					}
 				>
 					{numbers.map((num, index) => (
-						<button
+						<Button
 							key={`number-${num}`}
 							type="button"
-							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-md cursor-pointer text-black
+							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold cursor-pointer text-black
 								${num < nextNumber && gameStarted ? "opacity-40" : "hover:brightness-95"}`}
 							style={{ backgroundColor: buttonColors[index] }}
 							onClick={() => handleBoxClick(num)}
 							disabled={(!gameStarted && num !== 1) || gameOver}
 						>
 							{num}
-						</button>
+						</Button>
 					))}
 				</div>
 

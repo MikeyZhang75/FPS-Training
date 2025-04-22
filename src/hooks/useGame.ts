@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useColors } from "./useColors";
 import { useTimer } from "./useTimer";
 
-type GridSize = 4 | 5 | 6;
+export type GridSize = 4 | 5 | 6;
 
 export const useGame = (initialGridSize: GridSize = 4) => {
 	const [gridSize, setGridSize] = useState<GridSize>(initialGridSize);
