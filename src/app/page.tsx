@@ -1,5 +1,6 @@
 "use client";
 
+import { GameOverDialog } from "@/components/GameOverDialog";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { FadeTransition } from "@/components/ui/fade-transition";
@@ -177,28 +178,16 @@ export default function Home() {
 						</motion.div>
 					))}
 				</motion.div>
-
-				{/* For the game over overlay, we use AnimatePresence for proper mounting/unmounting */}
-				<FadeTransition
-					show={gameOver}
-					preventLayoutShift={false}
-					className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg"
-				>
-					<div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center">
-						<p className="text-xl font-bold mb-4">游戏结束！</p>
-						<button
-							type="button"
-							className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-							onClick={(e) => {
-								e.stopPropagation();
-								resetGame();
-							}}
-						>
-							再玩一次
-						</button>
-					</div>
-				</FadeTransition>
 			</div>
+
+			{/* Game Over Dialog */}
+			<GameOverDialog
+				open={gameOver}
+				timer={timer}
+				gridSize={gridSize}
+				formatTime={formatTime}
+				resetGame={resetGame}
+			/>
 		</div>
 	);
 }
