@@ -1,10 +1,10 @@
+import { useSession } from "@/lib/auth-client";
 import { recordService } from "@/services/record.service";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useColors } from "./useColors";
 import { useSound } from "./useSound";
 import { useTimer } from "./useTimer";
-import { useSession } from "@/lib/auth-client";
 export type GridSize = 4 | 5 | 6;
 
 export const useGame = (initialGridSize: GridSize = 4) => {
