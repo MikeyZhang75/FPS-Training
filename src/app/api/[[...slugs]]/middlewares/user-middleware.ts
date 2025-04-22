@@ -7,9 +7,6 @@ export const userMiddleware = async (c: Context) => {
 	// Pull the session from headers (cookies or Authorization)
 	const session = await auth.api.getSession({
 		headers: c.request.headers,
-		query: {
-			disableCookieCache: true,
-		},
 	});
 	if (!session) {
 		c.set.status = 401;

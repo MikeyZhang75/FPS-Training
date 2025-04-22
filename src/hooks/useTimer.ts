@@ -1,32 +1,48 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 export const useTimer = (isRunning: boolean) => {
 	const [timer, setTimer] = useState(0);
+	const startTimeRef = useRef(0);
+	const requestIdRef = useRef<number | null>(null);
 
 	// Reset timer to zero
 	const resetTimer = useCallback(() => {
 		setTimer(0);
+		startTimeRef.current = 0;
 	}, []);
 
-	// Format time as MM:SS
+	// Format time as SS:MS with exact precision
 	const formatTime = useCallback((seconds: number): string => {
-		const mins = Math.floor(seconds / 60);
-		const secs = seconds % 60;
-		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+		const secs = Math.floor(seconds);
+		// Get exact milliseconds (0-99)
+		const ms = Math.floor((seconds - secs) * 100) % 100;
+		return `${secs.toString().padStart(2, "0")}:${ms.toString().padStart(2, "0")}`;
 	}, []);
 
-	// Timer effect
+	// Timer effect using requestAnimationFrame for precise timing
 	useEffect(() => {
-		let interval: NodeJS.Timeout | null = null;
+		const updateTimer = () => {
+			if (startTimeRef.current === 0) {
+				startTimeRef.current = performance.now();
+			}
+
+			const elapsedSeconds = (performance.now() - startTimeRef.current) / 1000;
+			setTimer(elapsedSeconds);
+
+			requestIdRef.current = requestAnimationFrame(updateTimer);
+		};
 
 		if (isRunning) {
-			interval = setInterval(() => {
-				setTimer((prevTimer) => prevTimer + 1);
-			}, 1000);
+			requestIdRef.current = requestAnimationFrame(updateTimer);
+		} else if (!isRunning && startTimeRef.current !== 0) {
+			// Pause the timer by storing the current elapsed time
+			setTimer((prevTimer) => prevTimer);
 		}
 
 		return () => {
-			if (interval) clearInterval(interval);
+			if (requestIdRef.current) {
+				cancelAnimationFrame(requestIdRef.current);
+			}
 		};
 	}, [isRunning]);
 
