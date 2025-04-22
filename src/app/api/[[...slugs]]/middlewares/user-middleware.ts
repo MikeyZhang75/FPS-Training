@@ -5,7 +5,12 @@ import type { Context } from "elysia";
 
 export const userMiddleware = async (c: Context) => {
 	// Pull the session from headers (cookies or Authorization)
-	const session = await auth.api.getSession({ headers: c.request.headers });
+	const session = await auth.api.getSession({
+		headers: c.request.headers,
+		query: {
+			disableCookieCache: true,
+		},
+	});
 	if (!session) {
 		c.set.status = 401;
 		return { success: "error", message: "Unauthorized" };
