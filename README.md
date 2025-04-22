@@ -8,6 +8,8 @@
 - 计时器跟踪您的完成时间
 - 色彩丰富的视觉设计，便于数字识别
 - 简单直观的界面
+- 用户认证系统（注册、登录和用户资料）
+- 多语言支持（英语、中文、法语、德语、西班牙语）
 
 ## 技术栈
 
@@ -21,6 +23,10 @@
 - [Elysia](https://elysiajs.com/) (1.2.25) 用于 API 服务
 - [Drizzle ORM](https://orm.drizzle.team/) 用于数据库操作
 - [NeonDB](https://neon.tech/) 作为 Serverless PostgreSQL 数据库
+- [Better Auth](https://github.com/better-auth/better-auth) 用于用户认证
+- [React Hook Form](https://react-hook-form.com/) 用于表单处理
+- [Zod](https://zod.dev/) 用于数据验证
+- [Sonner](https://sonner.emilkowal.ski/) 用于通知提示
 
 ## 项目结构
 
@@ -30,19 +36,37 @@ src/
 │   ├── page.tsx    # 主游戏组件
 │   ├── layout.tsx  # 应用布局组件
 │   └── api/        # API 路由
+│       └── [[...slugs]]/  # 动态 API 路由
+│           └── libs/auth/  # 认证相关处理
 ├── components/     # React 组件
-│   └── ui/         # UI 组件
+│   ├── ui/         # UI 组件
+│   ├── AuthDialog.tsx    # 认证对话框组件
+│   ├── LoginForm.tsx     # 登录表单组件
+│   ├── RegisterForm.tsx  # 注册表单组件
+│   ├── LanguageDialog.tsx # 语言选择对话框
+│   └── UserProfileButton.tsx # 用户资料按钮组件
+├── contexts/       # React 上下文
+│   └── LoginContext.tsx  # 登录状态上下文
 ├── hooks/          # 自定义 React 钩子
 │   ├── useColors.ts  # 生成按钮颜色的钩子
 │   ├── useGame.ts    # 主游戏逻辑钩子
-│   └── useTimer.ts   # 计时器功能钩子
+│   ├── useTimer.ts   # 计时器功能钩子
+│   ├── useLogin.ts   # 登录功能钩子
+│   ├── useRegister.ts # 注册功能钩子
+│   └── useLanguage.ts # 语言选择钩子
 ├── database/       # 数据库相关代码
 │   ├── neon.ts     # NeonDB 连接
 │   ├── schema.ts   # 数据库模式定义
+│   ├── auth-schema.ts # 认证相关数据库模式
 │   ├── model.ts    # 数据模型
 │   └── utils.ts    # 数据库工具函数
 ├── lib/           # 工具库和辅助函数
+│   ├── auth.ts     # 服务端认证配置
+│   ├── auth-client.ts # 客户端认证工具
+│   └── utils.ts    # 通用工具函数
 └── services/      # 服务层代码
+    ├── auth.service.ts # 认证服务
+    └── eden.client.ts  # API 客户端
 ```
 
 ## 开始使用
@@ -98,6 +122,20 @@ bun run check:fix
 4. 尝试尽快完成序列
 5. 如果点击错误的数字，游戏结束
 6. 完成后，将显示您的用时
+
+## 用户认证
+
+1. 点击右上角的"登录 / 注册"按钮打开认证对话框
+2. 选择"登录"标签输入您的邮箱和密码登录
+3. 或选择"注册"标签创建新账户
+4. 登录后，您的用户名将显示在右上角
+5. 点击用户名可以打开下拉菜单，选择"退出登录"退出账户
+
+## 语言设置
+
+1. 点击右上角的语言图标按钮打开语言选择对话框
+2. 从可用语言列表中选择您偏好的语言
+3. 应用将保存您的语言偏好并在下次访问时自动应用
 
 ## 许可证
 

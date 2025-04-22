@@ -4,6 +4,7 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { LanguageDialog } from "@/components/LanguageDialog";
 import { UserProfileButton } from "@/components/UserProfileButton";
 import { Button } from "@/components/ui/button";
+import { FadeTransition } from "@/components/ui/fade-transition";
 import {
 	Select,
 	SelectContent,
@@ -15,6 +16,46 @@ import { useLoginContext } from "@/contexts/LoginContext";
 import { type GridSize, useGame } from "@/hooks/useGame";
 import { useLanguage } from "@/hooks/useLanguage";
 import { IconLanguage } from "@tabler/icons-react";
+
+// Helper function to resume AudioContext on user interaction
+const resumeAudioContext = () => {
+	// This will resume any suspended AudioContext when the user interacts with the page
+	const AudioContextClass = window.AudioContext;
+	if (AudioContextClass) {
+		// Get all existing audio contexts
+		const audioContexts: AudioContext[] = [];
+
+		// Try to access the global audio context we created in useSound.ts
+		// We'll use a safer approach without relying on a global list
+		const ctx = (window as { __audioContext?: AudioContext }).__audioContext;
+		if (ctx) {
+			audioContexts.push(ctx);
+		}
+
+		// Resume all contexts
+		for (const ctx of audioContexts) {
+			if (ctx.state === "suspended") {
+				ctx
+					.resume()
+					.catch((error: Error) =>
+						console.error("Failed to resume AudioContext:", error),
+					);
+			}
+		}
+	}
+
+	// Remove the event listeners after first interaction
+	window.removeEventListener("click", resumeAudioContext);
+	window.removeEventListener("touchstart", resumeAudioContext);
+	window.removeEventListener("keydown", resumeAudioContext);
+};
+
+// Add event listeners for user interaction
+if (typeof window !== "undefined") {
+	window.addEventListener("click", resumeAudioContext);
+	window.addEventListener("touchstart", resumeAudioContext);
+	window.addEventListener("keydown", resumeAudioContext);
+}
 
 export default function Home() {
 	const {
@@ -42,9 +83,13 @@ export default function Home() {
 			className="flex flex-col items-center justify-center min-h-screen gap-8 p-4 select-none"
 			onKeyDown={() => {}}
 		>
-			{(!gameStarted || gameOver) && (
+			{/* With Framer Motion, we can simplify the structure */}
+			<FadeTransition
+				show={!gameStarted || gameOver}
+				className="absolute top-4 left-4 h-9 w-[180px]"
+			>
 				<div
-					className="absolute top-4 left-4"
+					className="w-full h-full"
 					onClick={(e) => e.stopPropagation()}
 					onKeyDown={(e) => e.stopPropagation()}
 				>
@@ -54,7 +99,7 @@ export default function Home() {
 						}
 						value={gridSize.toString()}
 					>
-						<SelectTrigger className="w-[180px]">
+						<SelectTrigger className="w-full">
 							<SelectValue placeholder="Grid Size" />
 						</SelectTrigger>
 						<SelectContent>
@@ -64,14 +109,20 @@ export default function Home() {
 						</SelectContent>
 					</Select>
 				</div>
-			)}
+			</FadeTransition>
 
-			<div className="absolute top-4 right-4 flex gap-2">
-				<Button size="icon" variant="outline" onClick={openDialog}>
-					<IconLanguage />
-				</Button>
-				<UserProfileButton />
-			</div>
+			{/* With Framer Motion, we can simplify the structure */}
+			<FadeTransition
+				show={!gameStarted || gameOver}
+				className="absolute top-4 right-4 h-9"
+			>
+				<div className="flex gap-2">
+					<Button size="icon" variant="outline" onClick={openDialog}>
+						<IconLanguage />
+					</Button>
+					<UserProfileButton />
+				</div>
+			</FadeTransition>
 
 			<LanguageDialog
 				isOpen={isDialogOpen}
@@ -114,23 +165,26 @@ export default function Home() {
 					))}
 				</div>
 
-				{gameOver && (
-					<div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
-						<div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center">
-							<p className="text-xl font-bold mb-4">游戏结束！</p>
-							<button
-								type="button"
-								className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-								onClick={(e) => {
-									e.stopPropagation();
-									resetGame();
-								}}
-							>
-								再玩一次
-							</button>
-						</div>
+				{/* For the game over overlay, we use AnimatePresence for proper mounting/unmounting */}
+				<FadeTransition
+					show={gameOver}
+					preventLayoutShift={false}
+					className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg"
+				>
+					<div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center">
+						<p className="text-xl font-bold mb-4">游戏结束！</p>
+						<button
+							type="button"
+							className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+							onClick={(e) => {
+								e.stopPropagation();
+								resetGame();
+							}}
+						>
+							再玩一次
+						</button>
 					</div>
-				)}
+				</FadeTransition>
 			</div>
 		</div>
 	);

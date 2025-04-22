@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useColors } from "./useColors";
+import { useSound } from "./useSound";
 import { useTimer } from "./useTimer";
 
 export type GridSize = 4 | 5 | 6;
@@ -13,6 +14,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 	const [buttonColors, setButtonColors] = useState<string[]>([]);
 
 	const { generateDiverseColors } = useColors();
+	const { playSound } = useSound();
 	const timerIsRunning = gameStarted && !gameOver;
 	const { timer, resetTimer, formatTime } = useTimer(timerIsRunning);
 
@@ -29,6 +31,7 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 
 	// Reset the game
 	const resetGame = useCallback(() => {
+		// First update all state variables
 		setNumbers(shuffleNumbers());
 		setNextNumber(1);
 		setGameOver(false);
@@ -69,6 +72,8 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 			if (!gameStarted && !gameOver && num === 1) {
 				startGame();
 				setNextNumber(2); // Move to next number since 1 was clicked
+				// Play sound for correct click in a non-blocking way
+				void playSound("/sounds/click.wav");
 				return;
 			}
 
@@ -77,10 +82,20 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 
 			if (num === nextNumber) {
 				// Correct number clicked
+				// Play sound for correct click in a non-blocking way
+				void playSound("/sounds/click.wav");
+
+				// Update game state immediately without waiting for sound
 				if (nextNumber === gridSize * gridSize) {
-					// Game completed
-					alert("Congratulations! You completed the sequence!");
-					resetGame();
+					// Game completed - play sound first, then show alert
+					// Use a small delay to ensure the sound starts playing before the alert
+					setTimeout(() => {
+						alert("Congratulations! You completed the sequence!");
+						// Use another setTimeout to ensure the alert is processed before resetting the game
+						setTimeout(() => {
+							resetGame();
+						}, 100);
+					}, 50);
 				} else {
 					setNextNumber(nextNumber + 1);
 				}
@@ -89,7 +104,15 @@ export const useGame = (initialGridSize: GridSize = 4) => {
 				setGameOver(true);
 			}
 		},
-		[gameOver, gameStarted, nextNumber, resetGame, gridSize, startGame],
+		[
+			gameOver,
+			gameStarted,
+			nextNumber,
+			resetGame,
+			gridSize,
+			startGame,
+			playSound,
+		],
 	);
 
 	// Setup initial game state
