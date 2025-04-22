@@ -11,6 +11,7 @@ export default function Home() {
 	const [gameOver, setGameOver] = useState(false);
 	const [gameStarted, setGameStarted] = useState(false);
 	const [timer, setTimer] = useState(0);
+	const [buttonColors, setButtonColors] = useState<string[]>([]);
 
 	// Function to shuffle the numbers array
 	const shuffleNumbers = useCallback(() => {
@@ -25,12 +26,28 @@ export default function Home() {
 
 	// Reset the game
 	const resetGame = useCallback(() => {
+		// Function to generate a random light color suitable for black text
+		const generateRandomLightColor = () => {
+			// Using HSL to ensure we get light colors (high lightness value)
+			const h = Math.floor(Math.random() * 360); // Random hue
+			const s = Math.floor(Math.random() * 30) + 20; // Medium-low saturation (20-50%)
+			const l = Math.floor(Math.random() * 15) + 75; // High lightness (75-90%)
+			return `hsl(${h}, ${s}%, ${l}%)`;
+		};
+
 		setNumbers(shuffleNumbers());
 		setNextNumber(1);
 		setGameOver(false);
 		setGameStarted(false);
 		setTimer(0);
-	}, [shuffleNumbers]);
+
+		// Generate random colors for each button
+		const totalNumbers = gridSize * gridSize;
+		const colors = Array.from({ length: totalNumbers }, () =>
+			generateRandomLightColor(),
+		);
+		setButtonColors(colors);
+	}, [shuffleNumbers, gridSize]);
 
 	// Start the game
 	const startGame = useCallback(() => {
@@ -51,24 +68,10 @@ export default function Home() {
 		resetGame();
 	};
 
-	// Shuffle the numbers when the component mounts or grid size changes
+	// Shuffle the numbers when the component mounts
 	useEffect(() => {
 		resetGame();
 	}, [resetGame]);
-
-	// Add keyboard event listener for Enter key
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key === "Enter" && !gameStarted && !gameOver) {
-				startGame();
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => {
-			window.removeEventListener("keydown", handleKeyDown);
-		};
-	}, [gameStarted, gameOver, startGame]);
 
 	// Timer effect
 	useEffect(() => {
@@ -94,6 +97,14 @@ export default function Home() {
 
 	// Handle box click
 	const handleBoxClick = (num: number) => {
+		// If game not started and clicked on 1, start the game
+		if (!gameStarted && !gameOver && num === 1) {
+			startGame();
+			setNextNumber(2); // Move to next number since 1 was clicked
+			return;
+		}
+
+		// Return if game not active or over
 		if (gameOver || !gameStarted) return;
 
 		if (num === nextNumber) {
@@ -111,16 +122,10 @@ export default function Home() {
 		}
 	};
 
-	// Handle click on grid element (prevent event bubbling)
-	const handleGridClick = (e: React.MouseEvent) => {
-		e.stopPropagation();
-	};
-
 	return (
 		<div
 			className="flex flex-col items-center justify-center min-h-screen gap-8 p-4 bg-black select-none"
-			onClick={startGame}
-			onKeyDown={(e) => e.key === "Enter" && startGame()}
+			onKeyDown={() => {}}
 		>
 			{(!gameStarted || gameOver) && (
 				<div
@@ -142,57 +147,41 @@ export default function Home() {
 				</div>
 			)}
 
-			<div
-				className="relative"
-				onClick={handleGridClick}
-				onKeyDown={(e) => e.stopPropagation()}
-			>
-				{gameStarted && (
-					<div className="absolute -top-10 left-0 right-0 text-center">
-						<div className="inline-block px-4 py-2 rounded-md shadow-md text-white">
-							<span className="text-xl font-mono font-bold">
-								{formatTime(timer)}
-							</span>
-						</div>
+			<div className="relative">
+				<div className="absolute -top-10 left-0 right-0 text-center">
+					<div className="inline-block px-4 py-2 rounded-md shadow-md text-white">
+						<span className="text-xl font-mono font-bold">
+							{formatTime(timer)}
+						</span>
 					</div>
-				)}
+				</div>
 
 				<div
-					className="grid gap-2 p-4 rounded-lg shadow-lg"
-					style={{
-						gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-						gridTemplateRows: `repeat(${gridSize}, minmax(0, 1fr))`,
-						position: "relative",
-					}}
+					className="grid gap-2 p-4 rounded-lg shadow-lg relative grid-cols-[repeat(var(--grid-size),minmax(0,1fr))] grid-rows-[repeat(var(--grid-size),minmax(0,1fr))]"
+					style={
+						{
+							"--grid-size": gridSize,
+						} as React.CSSProperties
+					}
 				>
-					{!gameStarted && (
-						<div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10 rounded-lg" />
-					)}
-					{numbers.map((num) => (
+					{numbers.map((num, index) => (
 						<button
 							key={`number-${num}`}
 							type="button"
-							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-md
-								${gameOver || !gameStarted ? "cursor-not-allowed" : "cursor-pointer"}
-								${num < nextNumber && gameStarted ? "bg-black dark:bg-black text-white" : "bg-white dark:bg-white hover:bg-gray-100 dark:hover:bg-gray-200 text-black"}`}
+							className={`w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center text-lg sm:text-xl font-bold rounded-md cursor-pointer
+								${num < nextNumber && gameStarted ? "bg-black dark:bg-black text-white" : "text-black hover:brightness-95"}`}
+							style={
+								num >= nextNumber || !gameStarted
+									? { backgroundColor: buttonColors[index] }
+									: undefined
+							}
 							onClick={() => handleBoxClick(num)}
-							disabled={gameOver || !gameStarted}
+							disabled={(!gameStarted && num !== 1) || gameOver}
 						>
 							{num}
 						</button>
 					))}
 				</div>
-
-				{!gameStarted && !gameOver && (
-					<div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg border-0 p-0 z-20 pointer-events-none">
-						<div className="backdrop-blur-sm p-4 rounded-lg text-center shadow-lg">
-							<p className="text-neutral-300">
-								点击任何位置或按 <span className="font-bold">Enter</span>{" "}
-								开始游戏
-							</p>
-						</div>
-					</div>
-				)}
 
 				{gameOver && (
 					<div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
