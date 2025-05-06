@@ -26,15 +26,3 @@ export type allUsersStatsResponse = Awaited<
 		Awaited<ReturnType<typeof statsService.allUsersStats>>["data"]
 	>["data"]
 >;
-
-// Extended record type with userName
-export interface RecordWithUser {
-	id: string;
-	userId: string;
-	gridSize: number;
-	startTime: string;
-	endTime: string;
-	duration: number;
-	createdAt: string;
-	userName: string;
-}
